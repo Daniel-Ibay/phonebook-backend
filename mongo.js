@@ -1,27 +1,27 @@
-require('dotenv').config()
+const config = require('./utils/config.js')
 const mongoose = require('mongoose')
 const Person = require('./models/person')
+const logger = require('./utils/logger.js')
 
 
 if (process.argv.length < 3) {
-    console.log('give password as argument')
+    logger.info('give password as argument')
     process.exit(1)
 }
 
-const password = process.argv[2]
 const name = process.argv[3]
 const number = process.argv[4]
 
-const url = `mongodb+srv://daniel-ibay:melvin1538@phonebook-test.dx0j7.mongodb.net/?retryWrites=true&w=majority&appName=phonebook-test`
+const url = config.MONGODB_URI
 
 mongoose.set('strictQuery', false)
 
 mongoose.connect(url)
 .then(() => {
-    console.log('connected to MongoDB')
+    logger.info('connected to MongoDB')
   })
-  .catch((error) => {
-    console.log('error connecting to MongoDB:', error.message)
+.catch((error) => {
+    logger.error('error connecting to MongoDB:', error.message)
   })
 
 if (process.argv[4]) {
@@ -32,7 +32,7 @@ if (process.argv[4]) {
     })
     
     person.save().then(result => {
-        console.log('person added!')
+        logger.info('person added!')
         mongoose.connection.close()
     })
 } else {
@@ -40,7 +40,7 @@ if (process.argv[4]) {
     .find({})
     .then(result => {
         result.forEach(person => {
-            console.log(person)
+            logger.info(person)
         })
         mongoose.connection.close()
     })
